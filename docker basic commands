@@ -27,7 +27,7 @@ docker ps -a --filter ancestor=<image_name> : used to list all the containers fo
 docker logs <container_id> : used to check the logs of the container or used to check whether execution s goin on in a container.
 
 docker ps -q : used to list the ids of a runnin container.
-docker ps -a -q : used to list the ids of runnin and staopped container.
+docker ps -a -q : used to list the ids of runnin and stopped container.
 docker rm $(docker ps -a -q) : used to delete all the containers.
 docker rm $(docker ps -q) : used to delete runnin containers.
 
