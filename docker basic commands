@@ -1,0 +1,46 @@
+docker images : cmd used to list all the images in local machine.
+docker ps : it s used to display the runnin containers in the local machine.
+docker ps -a : it s used to display both runnin and stopped containers in the local machine.
+docker build - it s used to build the images.
+docker run : it s used to create a container from the image.
+docker rmi -f <image id> : it s used to delete the docker image forcefully.
+docker rm -f <container id> : it s used to delete the container forcefully.
+docker exec : it s used to get inside the container.
+
+volume
+docker volume create < voulme_name> : used to create voulme.
+docker volume ls : used to list the volumes.
+
+inspect
+docker inspect - it s used to get the information/details of container or volume.
+docker inspect <container id>
+docker inspect <voulme_name>
+
+tag
+docker tag - it s used to tag the docker image with differnt name or used to rename the docker image.
+docker tag <image_name>:<tag> <image_name>:<new_tag_name>
+docker tag <image_name> <new_image_name>
+
+docker commit  <container_id> : it s used to create a image from a runnin container.
+docker login -u <user_name> : used to login into docker registry.
+docker ps -a --filter ancestor=<image_name> : used to list all the containers for a particular image.
+docker logs <container_id> : used to check the logs of the container or used to check whether execution s goin on in a container.
+
+docker ps -q : used to list the ids of a runnin container.
+docker ps -a -q : used to list the ids of runnin and staopped container.
+docker rm $(docker ps -a -q) : used to delete all the containers.
+docker rm $(docker ps -q) : used to delete runnin containers.
+
+danglin Images
+docker images --filter dangling=true : used to list only danglin images.
+docker images --filter dangling=false : used to list all the images except danglin images.
+docker rmi $(docker images -q --filter dangling=true) : used to delete only danglin images. 
+
+Port
+docker ps port <container id> : used to check which ports are mapped to a container
+docker ps port : it s used to list the ports of runnin container.
+
+Prune - used to remove stopped container, Images and volumes
+docker system prune : used to remove all the unused docker objects
+docker images prune : used to remove unsued images along with danglin images
+docker volume prune : used to remove unused volumes.
