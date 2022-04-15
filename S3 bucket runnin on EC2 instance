@@ -1,0 +1,15 @@
+How to run S3 bucket using Ec2 instance? or how will you attach S3 bucket to Ec2 instance?
+1. Go to IAM & Create IAM roles 
+2. select common Use case EC2
+3. trusted entity type "AWS service"
+4. Add permission - search/select policy  "amazon s3 full access"
+5. set role name 
+6. review and create
+7. launch a new EC2 instance 
+8. Under configure instance details - choose IAM role which we have created   
+9. launch instance
+10. create a s3 bucket in the terminal and cross check the same in S3 window
+commands used to create a s3 bucket
+aws s3 mb s3:// <bucket_name> : cmd used to create a s3 bucket
+aws s3 ls                     : cmd used to list the s3 bucket
+aws s3 rb s3:// <bucket_name> : cmd used to remove the s3 bucket
