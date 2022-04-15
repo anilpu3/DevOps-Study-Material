@@ -1,0 +1,115 @@
+Sed : Streamin Editor
+It s used to replace the string with another string in a file. it s also used to print and delete the line in a file.
+
+syntax - sed 's/pattern1/patter2/g' filename
+	s - indicates substitue, replaces the string in the console not in the file.
+
+syntax - sed -i s/pattern1/patter2/g' filename
+	-i - indicates insert, replaces the string in the file.
+ 
+Sed -i ‘s/pattern/pattern2/Ig’ filename
+Capital I indicates case insensitive 
+Sed -i ‘$s/pattern/pattern2/Ig’ filename – to change the pattern at the last line of the file
+Sed -i ‘2s/pattern/pattern2/Ig’ filename - 2S : it will replace only in a second line
+Sed -i ‘2, 5s/pattern/pattern2/Ig’ filename - 2, 5S means it will replace in 2 thru 5 lines
+Sed -i ‘1s/pattern/pattern2/2g’ filename: It will replace from second occurrence of a file in the 1st line
+Sed -i ‘1s/pattern/pattern2/2’ filename: It will replace only the second occurrence of a file in the 1st line
+
+How to delete a line using sed commands 
+Sed -i ‘4d’ file name : it will delete 4th line of a file
+sed -i ‘2,5d’ file name : it will delete lines from 2 to 5 of a file
+sed -i ‘2d;5d’ filename : it will delete 2nd and 5th line of a file
+sed -i ‘/^$/d’ file name : it will delete a empty line in a file
+sed -i ‘/patternname/d’ file name : it will delete a line which contains a pattern 
+
+How to print the lines using sed command
+sed -n ‘4p’ filename : to print the 4th line of a file
+sed -n ‘2,5p’ file name : to print the 2 to 5th line of a file
+sed -n ‘3p;5p’ filename : to print 3rd and 5th line of a file
+sed -n ‘$p’ file name to print the last line of a file
+________________________________________________________________________________________________________________________________
+
+grep : the cmd s used to search a pattern in the file. by default the serach pattern s case sensitive.
+syntax - grep "pattern" filename
+
+grep "^pattern" filename - it will print the line, which starts with the pattern.
+grep "pattern$" filename - it will print the line, which ends with the pattern.
+
+grep "^$" filename - it will print empty line in a file.
+grep -c "^$" filename - it will count the empty lines in a file 
+
+grep -e "pattern" -e "pattern2" -e "pattern3" filename - search multiple patterns in a file.
+grep -i "pattern" filename - makes the search pattern case insensitive.
+grep -w "pattern" filename - used to search the specific word in a file.
+grep -c "pattern" filename - used to count the no.of lines in a file which contains the pattern.
+grep -n "pattern" filename - used to print the pattern lines along with the line number.
+grep -v "pattern" filename - used to print all the lines which does'nt contain the searched pattern.
+*
+grep "pattern" * - used to search pattern in all the files under current directory.
+grep -l "pattern" * - used to list the file name which contains search pattern in the current directory.
+grep -R "pattern" * - used to search all the patterns in directory and its sub directories. 
+____________________________________________________________________________________________________________________________________
+
+Cut is used to cut the files (display) in column wise
+cut -d “ “ -f1 filename : 
+d: display the first column of a file
+delimiter f :column 1: first column
+cut -d " " -f1 filename : display 1st column of a file.
+cut -d " " -f2 filename : display 2nd column of a file.
+cut -d “ “ -f1-3 filename : display from 1st through 3rd column of a file
+cut -d “ “ -f1,3 filename ; display 1st and 3rd column of a file
+
+Disadvantages, 
+1.	we can’t display in row wise
+2.	If we leave more space between the columns, then we will not get desired output.
+______________________________________________________________________________________________________________________________________
+
+awk : this command is used to cut (display) the files in both column and row wise
+by default awk uses space as a delimiter.
+awk -F “ “ ‘{print $2}’ filename : To cut & display the 2nd column of a file
+awk -F “ “ ‘{print $NF}’ filename : : To cut & display the last column of a file
+awk  ‘{print $NF}’ filename : To cut & display the last column of a file
+awk  ‘{print $(NF -1)}’ filename : To cut & display the last but one column of a file - 2nd last column.
+awk ‘{print $2, $4}’ filename: To cut & display the 2nd and 4th column of a file
+awk ‘ (NR>1) {print $2, $5}’ filename : display from 2nd row and print 2nd & 5th column in a file
+awk ‘ NR==2, NR==3  {print $NF}’ filename : it will display rows 2  to 3 of last column
+awk ‘ NR==2; NR==4  {print $0}’ filename: it will display only 2nd and 4th row of a file
+awk 'END {print $NF}' filename : it would cut and display the last row of a last column in a file.
+
+awk 'NR==5{print $4} ;NR==8 {print $2}' material3 
+awk 'NR==5{print $4} ;NR==8 {print $(NF-2)}' material3 
+_______________________________________________________________________________________________________________________________________
+Find : it is used to find the location of a file or directory
+Find  / -iname filename   / indicates searches in root directory -I  case insensitive
+Find  .   . (dot) indicates current directory
+
+Find . -type f -iname Devops - Find only the files with the file name Devops in the current directory
+Find / -type d -iname day1 : use sudo - Find only the directories with day1 in root directory
+
+How to list the files which are created or modified 3 months ago
+Find . -type f -mtime +90
+
+How to list the files which are created or modified within 3 months 
+Find . -type f -mtime -90
+
+How to list the files which are created or modified within 60days and 30 days ago
+Find . -type f -mtime  -60 ! -mtime -30
+
+List the files which are modified within 10 min
+Find . -type f -mmin -10
+
+List the files which are modified 10 min ago
+Find . -type f -mmin +10
+
+List the files which have permission 777
+Find . -type f -perm 777
+
+List the files which are empty
+Find . -type f -empty
+
+List the files which have size is greater than 4k
+Find . -type f -size 4k
+
+To restrict the automatic recursive, we use maxdepth 
+Max depth (number) indicates it will search the number of level you gave.
+Find . -maxdepth 2 -type f -iname filename
