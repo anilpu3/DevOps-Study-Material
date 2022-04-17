@@ -1,0 +1,9 @@
+Install Package - docker
+ hosts: all
+  tasks:
+    - name: "package install"
+      apt:
+        name: docker.io
+        state: latest
+      become: yes
+        
