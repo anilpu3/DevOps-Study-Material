@@ -9,7 +9,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 2
-      maxUnavialable: 0
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: tomcatapps
