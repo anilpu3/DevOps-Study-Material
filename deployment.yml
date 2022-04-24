@@ -1,3 +1,4 @@
+cat << EOF > /root/deployment.yml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,4 +22,4 @@ spec:
       containers: 
         - name: tomcat
           image: anilpu3/cicd-build-docker-repo:1.0 
-  
+EOF          
