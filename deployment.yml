@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deployment
+spec: 
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavialable: 0
+  selector:
+    matchLabels:
+      app: tomcatapps
+  template:
+    metadata:
+      name: tomcat-deployment
+      labels:
+        app: tomcatapps
+    spec: 
+      containers: 
+        - name: tomcat
+          image: anilpu3/cicd-build-docker-repo:1.0 
+  
