@@ -21,5 +21,5 @@ spec:
     spec: 
       containers: 
         - name: tomcat
-          image: anilpu3/cicd-build-docker-repo:1.0 
+          image: anilpu3/cicd-build-docker-repo:95 
 EOF          
