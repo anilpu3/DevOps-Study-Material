@@ -1,0 +1,33 @@
+---
+- hosts: all
+  tasks:
+    - name: install pakage
+      apt:
+        name: git
+        state: latest
+        become: yes
+    
+    - name: copy files
+      copy:
+        src: /home/ubuntu/filename
+        dest: /home/user1/
+    
+    - name: permission
+      file:
+        path: /home/user/file #path of the file
+        mode: 0777
+        owner: username
+        group: group_name
+    
+    - name: update repository
+      update:
+        update_cache: yes
+     
+    - name: install multiple package
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - git
+        - vim
+      become: yes  
