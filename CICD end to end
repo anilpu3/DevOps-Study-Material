@@ -1,0 +1,19 @@
+CICD - END to END Process
+Once the developers completes his work, he wil raise a PR (pull request). As soon as developers raise the PR, the local build job would be triggered. 
+Once the build s success. The reviewer or approver merge the code into the central repo by clickin on merge button ( merge button wil not be enabled in PR, 
+if the local build fails). 
+As soon as the merge s completed in the central repo, the Jenkins pipeline job wil be triggered. Jenkins pipeline job has 3 stages
+1. Build Stage
+2. Publish Stage
+3. Deliver Stage
+Build Stage - we move the respective folder of the micro service, which contains the dockerfile, 
+we build the respective docker image. Once the docker image s build then the build stage s completed.
+
+Publish Stage - we login into the respective docker registry and push the successful artiffacts
+ (that s the newly build docker image, which wil be tagged with proper Jenkins build number) to docker registry.
+1. First we will tag the image wit proper version.
+2. Then push the image to the docker registry.
+
+Deliver Stage - we will do the deployment on the kubernetes usin helm charts.
+First we will pull the helm charts from the jfrog artiffactory then wil set the helm values for the environment variables, 
+then run the helm upgrade command for rollin update, if its first time run helm install.
