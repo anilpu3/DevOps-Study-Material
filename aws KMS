@@ -1,0 +1,17 @@
+KMS - Key Management Systems
+2 types
+1> Symmetric
+2> Asymmetric
+
+Symmetric 
+CMK - Customer Master Key
+	1> Usin CMK through AWS CLI, will generate
+		1> Plaintext Key 
+		2> Cipher Encrypted key
+	2> Both the Keys has to be decodded as both the keys are encoded with base65
+	3> Encrypt the data usin Plaintext Key
+	4> Delete the Plaintext Key.
+	5> To decrypt the data
+		1> Use Cipher Encrpted Key to generate the Plaintext Key.
+		2> Decode the Plaintext Key.
+		3> Use the Plaintext Key to Decrypt the data.
