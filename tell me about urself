@@ -1,0 +1,12 @@
+About Yourself
+I am working as a DevOps engineer , Majorly I took part in creation of CI-CD pipeline , I created CI_CD from the scratch using Jenkins pipeline.
+As soon as developers commits the code into Git repository , Jenkins job will get triggered it will pull from the source code from Github repo & it would be compile ,
+ once after compiling it would run respective test cases & deployed.
+I take care of writing the scripts to automate manual and repetitive tasks.
+I take care of deployments where in I I had deployed the build to  QA UAT & production environments.
+I Majorly involved in releases , Since we had frequent releases at the time of release we create and merge respective branches.
+I had worked on AWS as the major cloud platform where in I worked on services like VPC , EC2 , S3 , EBS , EFS , IAM roles , Route 53 , ELB & Autoscaling.
+I also worked on docker I had written docker files & reduced Docker image size as well with the help of multistage docker file.
+I also worked on Kubernetes where in we created deployments with the help of helm charts , We followed rolling update strategy for any updates in terms of Kubernetes.
+I worked on Ansible as well , I am aware of Ansible playbooks & I have fair understanding of Ansible roles.
+I worked on Infrastructure as a code as well , I have good knowledge towards infra automation with the help of Terraform.
