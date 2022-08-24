@@ -15,3 +15,47 @@ CMK - Customer Master Key
 		1> Use Cipher Encrpted Key to generate the Plaintext Key.
 		2> Decode the Plaintext Key.
 		3> Use the Plaintext Key to Decrypt the data.
+
+Creating KMS data keys
+
+1) Command to create Plaintext data key and Encrypted data key
+	 aws kms generate-data-key --key-id alias/demokey --key-spec AES_256 --region us-east-1
+note: - demokey is the name of the CMS whcih we created in AWS console
+
+2) Once after both keys are generated, save them in separate file. But before saving them we need to decode them 
+because they are encoded with base64 format.
+	ex: - echo "Plaintext data key" | base64 --decode >  file_name
+Do this for both Plaintext data key and ciphertext data.
+
+3) Now encrypt the file which u want to encrypt usign following command and save the output in another file name
+ 	openssl enc -in ./file_name_to_be_encrypted -out ./ouput_file_name_afterencrypted -e -aes256 -k fileb://./planidatakey_name
+
+4) Now delete the Plaintext data key and file which contains the sensitive data.
+
+5) Now if we want to see our encrypted data, then we need to decrypt it. But we don't have Plaintext data key,
+so we need to call KMS to generate Plaintext data key by using encrypted data key which is created in the step 1.
+	aws kms decrypt --ciphertext-blob fileb://./encrypted-datakey --region us-east-1
+This will create the Plaintext data key once agian.
+
+6) Again we need to decode it by base64 formate
+	ex: - echo "Plaintext data key" | base64 --decode >  file_name
+
+7) Now we need to dcrypt the encrypted data using following command and then we can see our original data.
+	openssl enc -in ./file_name_to_be_dcrypted -out ./ouput_file_name_afterdcrypted -d -aes256 -k fileb://./plaindatakey_name
+
+
+To convert a base64 format data decode and encode in linux and windows
+Linux
+ Encode a data file to Base64
+base64 data.txt > data.b64
+
+ Decode a Base64 file
+base64 -d data.b64 > data.txt
+
+
+Windows
+ Encode a data file to Base64
+certutil -encode data.txt tmp.b64 && findstr /v /c:- tmp.b64 > data.b64
+
+ Decode a Base64 file
+certutil -decode data.b64 data.txt
