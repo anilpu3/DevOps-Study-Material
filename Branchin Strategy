@@ -1,0 +1,15 @@
+Branchin Strategy
+Branches can be created for multiple reason. here we create branches for releases.
+we follow git flow as a strategy. in our strategy, we have branches like master, feature,
+hotfix, release and dev branch.
+Feature branch - the developers wil create there own feature branch and merge the changes into the dev branch.
+release branch - is used to maintian the releases.
+hotfix fix branch - used to delever critical fix to the production environment.
+master - it is a copy of production environment. it s always a clean branch.
+development will be goin on in dev branch. once the code s ready for first release in dev branch, we will create a 
+separate branch for first release and make release from release branch.
+whatever issue we hav in the first release will be fixed in first release branch.
+parallel development will be going on in dev branch for second release. once the code s ready for the second release
+in dev branch. before we create release 2 branch, we would merge the first release into the dev banch and then we wil create
+release 2 branch for second release 
+whatever issue seen in the first release will not be present in the second release.
