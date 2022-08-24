@@ -1,0 +1,45 @@
+sudo su - 
+apt install default-jre
+cd /opt
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.60/bin/apache-tomcat-9.0.60.tar.gz
+tar -xvvf apache-tomcat-9.0.60.tar.gz
+cd apache-tomcat-9.0.60
+
+To start the services : cd bin
+./startup.sh
+To stop the services : cd bin
+./shutdown.sh
+
+To change the port number
+cd conf
+change the port number 8080 by any other port  number in line 69 in server.xml
+
+to add the users
+cd conf
+add the below line in tomcat-users.xml  in between tomcat-userstag
+
+ <!-- user admin can access manager and admin section both -->
+            <role rolename="admin-gui" />
+          <user username="admin" password="admin" roles="manager-gui,admin-gui" />
+          <!-- user admin can access manager and admin section both -->
+            <role rolename="manager-gui" />
+         <user username="admin" password="admin" roles="manager-gui" />
+
+To allow the login for the user we need to comment line number 21 and 22 in context.xml file under below path
+cd webapps/host-manager/META-INF
+cd webapps/manager/META-INF
+
+docker cp hello-world.war <container_name>:/usr/local/tomcat/webapps
+/usr/local/tomcat/webapps
+
+
+============================
+webapps.dist $ cp -R * ../webapps - get inside a container for tomcat to wrk, post copyin webapps.dist files to webapps, apt-get update and then install vim editor and add the user and admin details in conf folder/tomcat_users.xml and comment both in host-manager and manager
+				then run the tomcat.
+
+===========================================================
+FROM tomcat:9.0.34
+RUN sed -i 's/8080/9090/' /usr/local/tomcat/conf/server.xml
+EXPOSE 9090
+
+/var/run/docker.sock
