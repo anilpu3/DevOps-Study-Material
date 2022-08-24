@@ -1,0 +1,91 @@
+=======================================================================
+Kubernetes Install Step: Master Node
+=======================================================================
+Step1: Install Docker
+
+Step2:  Disable swap and enable IP forwarding on all nodes
+
+swapoff -a
+
+$ sudo hostnamectl set-hostname "k8s-master"     // Run this command on master node
+
+To enable the ip forwarding permanently, edit the file “/etc/sysctl.conf” and look for line “net.ipv4.ip_forward=1” and un-comment it. After making the changes in the file, execute the following command
+
+$ sudo sysctl -p
+net.ipv4.ip_forward = 1
+$
+
+Step3: Install Kubectl, kubelet and kubeadm on all nodes
+
+$ sudo apt install -y apt-transport-https curl
+$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+$ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+$ sudo apt update
+$ sudo apt install -y kubelet kubeadm kubectl
+
+Step4: (Run Kubeadm init)
+
+kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=<IP address of machine>
+
+Note: Copy the Kubeadm join command which will be output of the above command
+(Example: kubeadm join 192.168.1.40:6443 --token b4sfnc.53ifyuncy017cnqq --discovery-token-ca-cert-hash sha256:5078c5b151bf776c7d2395cdae08080faa6f82973b989d29caaa4d58c28d0e4e)
+
+Step5: 
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
+Step 6:
+
+
+kubectl get nodes
+
+root@ip-172-31-2-89:~# kubectl get nodes
+NAME             STATUS     ROLES                  AGE     VERSION
+ip-172-31-2-89   NotReady   control-plane,master   2m15s   v1.22.1
+
+
+Step 7: Apply the Kubernetes Network by using Calico 
+
+
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+Step 8: 
+
+kubectl get nodes
+
+root@ip-172-31-2-89:~# kubectl get nodes
+NAME             STATUS   ROLES                  AGE     VERSION
+ip-172-31-2-89   Ready    control-plane,master   3m47s   v1.22.1
+
+Step 9: To generate the join command
+
+kubeadm token create --print-join-command
+
+
+kubectl get pods -A
+
+======================================================================================
+Kubernetes Install Step: Worker Node/ Slave Node
+======================================================================================
+Step1: Install Docker
+
+//$ sudo hostnamectl set-hostname "k8s-master"     // Run this command on master node
+$ sudo hostnamectl set-hostname "k8s-node-0"     // Run this command on node-0
+//$ sudo hostnamectl set-hostname "k8s-node-1"     // Run this command on node-1
+
+Step2: Install Kubectl, kubelet and kubeadm on all nodes
+
+$ sudo apt install -y apt-transport-https curl
+$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+$ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+$ sudo apt update
+$ sudo apt install -y kubelet kubeadm kubectl
+
+step 3: copy the join command which was generated in the master node and run it in worker node or slave node
+=======================================================================================
+
+kubeadm token list
