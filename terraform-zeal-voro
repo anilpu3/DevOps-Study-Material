@@ -1,0 +1,824 @@
+Read, Generate, Modify Configurations
+
+Terraform has the capability to output the attribute of a resource with the output values.
+Example:
+● ec2_public_ip = 35.161.21.197
+● bucket_identifier = terraform-test-kplabs.s3.amazonaws.com
+An output attributes can not only be used for the user reference, but it can also act as an input
+to other resources being created via terraform
+Let’s understand this with an example:
+After EIP gets created, it’s IP address should automatically get whitelisted in the security group.
+
+
+
+
+Terraform variables
+
+Repeated static values can create more work in the future.
+Terraform Variables allows us to centrally define the values that can be used in multiple
+terraform configuration blocks
+Multiple approaches to variable assignment
+Variable default: it will take the default value mentioned in variable.tf file
+Environment variables: here we can give values by command line by entering the following command
+“setx  TF_VAR_variable name t2.nano”
+After above command then enter terraform plan.
+Note: - if u are using windows then after entering “setx” command open new terminal and then enter terraform plan (if u enter in the same terminal it will not work)
+For linux just do “export TF_VAR_variable name=”t2.nano” (in same terminal this will work)
+Then enter terraform plan
+Command line flags: If we want to mention explicitly (that is leaving blank in variables.tf file)
+Ex: variable “myvar_ip”{
+}
+we can do that by the following command
+terraform plan -var=”variable name=t2.micro”
+or just leave variables.tf file blank and try terraform plan then it will ask for “enter value” then also we can give value
+From file: By creating the terraform.tfvars file we can also assign values(file name should be terraform.tfvars).
+If u want to change the file name then, when entering command 
+terraform plan -var-file=”name.tfvars”(this will work)
+note:- if u mention values in variables.tf file or make it blank also it will work
+Types of Terraform Variables
+Type keyword	Descriptio
+string	Sequence of Unicode characters representing some text , like “hello”
+list	Sequential list of values identified by their position. Starts with 0
+[“Mumbai” , “Singapore” , “usa”]
+map	A group of values identified by named labels, like {name=”ambi” , age=”18”}
+number	Example: 100
+
+List variable type
+As the name suggests we are going to define a list that will contain more than one element in it.
+
+provider "aws"{
+	region = "us-east-1"
+}
+
+resource "aws_instance" "myec2"{
+	ami = " "
+	instance_type = var.list[1]
+}
+
+variable "list"{
+	type = list
+	default = ["m5.large", "m5.xlarge", "t2.medium"]
+}
+
+variable "types"{
+	type = map
+	default = {
+	    us-east-1 = "t2.micro"
+	    us-west-2 = "t2.nano"
+  	    ap-south-1 = "t2.small"
+	}
+}
+
+Map variable type
+Terraform also supports the map variable type where you can define the key-valye pair.
+Let’s take an example where we need to define project and environment, so we can use the map variable to achieve that.
+provider "aws"{
+	region = "us-east-1"
+}
+
+resource "aws_instance" "myec2"{
+	ami = " "
+	instance_type = var.type["us-west-2"]
+}
+
+variable "list"{
+	type = list
+	default = ["m5.large", "m5.xlarge", "t2.medium"]
+}
+
+variable "types"{
+	type = map
+	default = {
+	    us-east-1 = "t2.micro"
+	    us-west-2 = "t2.nano"
+  	    ap-south-1 = "t2.small"
+	}
+}
+
+Count and Count Index
+
+Overview of Count:
+The count parameter on resources can simplify configurations and let you scale resources by
+simply incrementing a number.
+Let’s assume, you need to create two EC2 instances. One of the common approaches is to
+define two separate resource blocks for aws_instance.
+
+
+With the count parameter, we can simply specify the count value and the resource can be
+scaled accordingly.
+ 
+
+Count Index
+In resource blocks where the count is set, an additional count object is available in expressions,
+so you can modify the configuration of each instance.
+This object has one attribute:
+count.index — The distinct index number (starting with 0) corresponding to this instance.
+Challenges with Count Parameter
+With the below code, terraform will create 5 IAM users. But the problem is that all will have the
+same name.
+
+
+count.index allows us to fetch the index of each iteration in the loop.
+
+
+Understanding Challenge with Default Count Index
+Having a username like loadbalancer0, loadbalancer1 might not always be suitable.
+Better names like dev-loadbalancer, stage-loadbalancer, prod-loadbalancer is better.
+count.index can help in such a scenario as well.
+
+
+
+
+
+Conditional expressions
+A conditional expression uses the value of a bool expression to select one of two values. Syntax of Conditional expression:
+condition ? true_val : false_val
+
+If the condition is true then the result is true_val. If the condition is false then the result is false_val.
+
+mLet’s assume that there are two resource blocks as part of terraform configuration. Depending on the variable value, one of the resource blocks will run.
+
+syntax
+condition ? true_val : false_val
+example:
+provider "aws" {
+   region     = "eu-central-1"
+   
+}
+Variable “iftest”{}
+resource "aws_instance" "dev" {
+
+   ami           = "ami-0767046d1677be5a0"
+   instance_type =   “t2.micro”
+   count = var.iftest == true ? 1 :0
+
+} 
+resource "aws_instance" "prod" {
+
+   ami           = "ami-0767046d1677be5a0"
+   instance_type =   “t2.large”
+   count = var.iftest == false ? 1 :0
+
+} 
+In terraform.tfvars file add
+iftest = true
+
+
+Terraform locals
+
+Terraform locals are quite similar to Terraform variables but Terraform locals do not change their value. On the other hand, if you talk about Terraform input variables then it is dependent on user input and it can change its value.
+
+
+So, if you have a very large Terraform file where you need to use the same values or expressions multiple times then Terraform local can be useful for you.
+
+provider "aws" {
+   region     = "ap-south-1"
+}
+locals {
+  staging_env = "staging"
+}
+resource "aws_vpc" "staging-vpc" {
+  cidr_block = "10.5.0.0/16"
+
+  tags = {
+    Name = "${local.staging_env}-vpc-tag"
+  }
+}
+
+resource "aws_subnet" "staging-subnet" {
+  vpc_id = aws_vpc.staging-vpc.id
+  cidr_block = "10.5.0.0/16"
+  tags = {
+    Name = "${local.staging_env}-subnet-tag"
+  }
+}
+resource "aws_instance" "ec2_example" {
+   
+   ami           = "ami-0767046d1677be5a0"
+   instance_type = "t2.micro"
+   subnet_id = aws_subnet.staging-subnet.id
+   
+   tags = {
+           Name = "${local.staging_env} - Terraform EC2"
+   }
+}
+
+Best practices for using locals
+1.	You should use terraform locals excessively inside your Terraform configuration
+2.	Always keep in mind to use terraform local where you think that value is going to be changed in the future.
+3.	Always think of Terraform Locals as a central place for storing configuration values.
+
+Terraform functions
+Lookup: - lookup retrieves the value of a single element from a map, given its key. If the given key does not exist, the given default value is returned instead.
+lookup (map, key, default)
+element: - element retrieves a single element from a list.
+element (list, index)
+file: - file reads the contents of a file at the given path and returns them as a string.
+file(path)
+example:
+provider "aws" {
+   region     = var.region
+}
+locals {
+ time = formatdate("DD MMM YYYY hh:mm ZZZ", timestamp())
+}
+variable "region"{
+  default = "ap-south-1"
+}
+variable "tags"{
+  type = list
+  default = ["firstec2", "secondec2"]
+}
+
+variable "ami"{
+  type = map
+  default = {
+     "us-east-1" = "  "
+     "us-west-2"="  "
+     "ap-south-1"="  "
+   }
+}
+
+resource "aws_key_pair" "loginkey"{
+   key_name = "login-key"
+   public_key = file("${path.module}/id_rsa.pub")
+}
+
+resource "aws_instance" "ourec2" {
+  ami = lookup(var.ami, var.region)
+  instance_type = "t2.micro"
+  key_name = aws_key_pair.loginkey.key_name
+  count=2
+
+  tags = {
+    Name = element(var.tags,count.index)
+  }
+}
+
+Data sources
+Data sources allow data to be fetched or computed for use elsewhere in Terraform configuration
+ 
+
+A data source is defined under the data block.
+
+It reads from a specific data source (aws_ami) and exports results under “app_ami”
+
+
+provider "aws"{
+region = "us-west-2"
+}
+
+data "aws_ami" "app_ami"{
+	most_recent = true//it will fetch recent image
+	owners = ["amazon"]
+
+	filter {
+		name = "name"
+		values = ["amzn2-ami-hvm*"]
+	}
+}
+
+resource "aws_instance" "instance-1"{
+	ami = data.aws_ami.app_ami.id
+	instance_type = "t2.micro"
+}
+Debugging in terraform
+
+Terraform has detailed logs which can be enabled by setting the TH_LOG environment variable to any value
+You can set TF_LOG to one of the log levels TRACE, DEBUG, INFO, WARN or ERROR to change the verbosity of the logs
+TRACE is the most verbose and it is the default if TF_LOG is set to something other than a log level name
+
+Dynamic blocks
+
+Dynamic blocks allow us to dynamically construct repeatable nested blocks which is supported inside resource, data, provider, and provisioner blocks.
+In many of the use-cases, there are repeatable nested blocks that needs to be defined.
+This can lead to a long code, and it can be difficult to manage in a longer time.
+
+
+
+
+
+
+
+variable "sg_ports"{
+	type = list(number)
+	description = "list of ingress ports"
+	default = [8200, 8201, 8300, 9200]
+resource "aws_security_group" "dynamicsg"{
+	name = "dynamic-sg"
+	description = "Ingress for vault"
+
+	dynamic "ingress"{
+		for_each = var.sg_ports
+		content {
+			from_port = ingress.value
+			to_port = ingress.value
+			protocol = "tcp"
+			cidr_blocks = ["0.0.0.0/0"]
+		}
+}
+
+Iterators
+
+The iterator argument (optional) sets the name of a temporary variable that represents the current element of the complex value.
+
+
+dynamic "ingress"{
+		for_each = var.sg_ports
+		content {
+			from_port = ingress.value
+			to_port = ingress.value
+			protocol = "tcp"
+			cidr_blocks = ["0.0.0.0/0"]
+		}
+
+dynamic "ingress"{
+		for_each = var.sg_ports
+		iterator = port
+		content {
+			from_port = port.value  //easily identify which one to be iterate
+			to_port = port.value
+			protocol = "tcp"
+			cidr_blocks = ["0.0.0.0/0"]
+		}
+
+Tainting resources
+If u taint any particular resource, then we can modify only that tainted resource and if u make plan or apply it will not affect to other resources.
+Command: terraform taint resource type.resource name
+
+
+Splat expressions
+Splat expression allows us to get a list of all the attributes
+
+Terraform plan file
+The generated terraform plan can be saved to a specific path
+This plan can then be used with terraform apply to be certain that only the changes shown in this plan are applied
+terraform plan -out=filename //it will save the configuration to filename which we provide
+terraform apply filename // this will apply the configuration 
+
+terraform settings
+The special terraform configuration block type is used to configure some behaviors of Terraform itself, such as requiring a minimum Terraform version to apply your configuration
+1) Terraform version: - the required_version setting accepts a version constraint string, which specifies which versions of terraform can be used with your configuration.
+If the running version of terraform doesn't match the constraints specified, terraform will produce an error and exit without taking any further actions
+terraform {
+	required_version = "> 0.12.0"
+}
+2) Provider version: - The required_providers block specifies all the providers required by the current module, mapping each local
+provider name to a source address and a version constraint.
+terraform {
+	required_providers{
+		version = "~> 1.0"
+	}
+}
+
+
+
+
+
+Zipmap function
+The zipmap function constructs a map from a list of keys and a corresponding list of values
+
+
+ 
+
+Terraform output
+
+The terraform output command is used to extract the value of an output variable from the state file
+We can see the output after applying and when u want to see it again then just type terraform apply then it will not apply but instead it will display the output.
+Also, we can see one more option 
+terraform output output_associated_name
+
+
+Provisioners
+
+When a resource is created, you may have some scripts or operations you would like to be performed locally or on the remote resource. Terraform provisioners are used to accomplish this goal.
+Types of Provisioners: 
+Remote_exec: The remote_exec provisioner invokes a script on a remote resource after it is created. 
+This can be used to run a configuration management tool, bootstrap into a cluster, etc.
+
+
+
+example:
+provider "aws"{
+region = "us-east-1"
+}
+
+resource "aws_instance" "instance-1"{
+    ami = "ami-052efd3df9dad4825"
+    instance_type = "t2.micro"
+    key_name = "terraform-key" //this is the key name
+
+    connection {
+    type     = "ssh"
+    user     = "ubuntu"
+    private_key = file("./terraform-key.pem")
+    host     = self.public_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt update",
+      "sudo apt install nginx -y"
+    ]   
+  }
+}
+
+Local_exec: local_exec is used to run a script/command on local machine where we are running our terraform code.
+Example:
+provider "aws"{
+region = "us-east-1"
+}
+
+resource "aws_instance" "instance-1"{
+    ami = "ami-052efd3df9dad4825"
+    instance_type = "t2.micro"
+
+    
+
+  provisioner "local-exec" {
+    command = "echo ${aws_instance.instance-1.private_ip} >> ip.txt"
+  }
+}
+
+provisioner types
+
+1) Creation time provisioner: - Creation-time provisioners are only run during creation, not during updating or any other lifecycle.
+If a creation-time provisioner fails, the resource is marked as tainted.
+2) Destroy time provisioner: - Destroy-time provisioners are run before the resource is destroyed.
+If when = destroy is specified, the provisioner will run when the resource it is defined within is destroyed
+
+resource "aws_instance" "web"{
+provisioner "local-exec" or "remote-exec"{
+	when = destroy or creation
+	command = "echo something to destroy or creation"
+	}
+}
+provisioner failure behavior
+In creation time provisioner if the creation is failed it will set the resource to taint, so to avoid this we an option to continure by following conditions.
+By default, provisioners that fail will also cause the terraform apply itself to fail.
+The on_failure setting can be used to change this. The allowed values are:
+Allowed values 	Description
+continue	Ignore the error and continue with creation or destruction
+fail	Raise an error and stop applying (the default behavior). If this is a creation provisioner, taint the resource 
+
+resource "aws_instance" "web"{
+provisioner "local-exec" or "remote-exec"{
+	command = "echo something to destroy or creation"
+	on_failure = continue
+	}
+}
+
+Understanding the DRY principle
+
+In software engineering, don't repeat yourself (DRY) is a principle of software development aimed at reducing repetition of software patterns.
+
+In the earlier lecture, we were making static content into variables so that there can be a single source of information.
+
+
+
+
+
+Generic Scenario:
+
+We do repeat multiple times various terraform resources for multiple projects.
+
+Sample EC2 Resource
+
+resource "aws_instance" "myweb" { ami = "ami-bf5540df" instance_type = "t2.micro" security_groups = ["default"]
+}
+Instead of repeating a resource block multiple times, we can make use of a centralized structure.
+
+Centralized Structure:
+
+We can centralize the terraform resources and can call out from TF files whenever required.
+
+
+
+
+
+Challenges with Terraform Modules
+
+One common need for infrastructure management is to build environments like staging, production with a similar setup but keeping environment variables different.
+
+
+
+
+When we use modules directly, the resources will be a replica of code in the module.
+
+ 
+
+
+
+
+
+Using Locals with Modules
+
+Understanding the Challenge
+
+Using variables in Modules can also allow users to override the values which you might not want.
+
+
+
+
+
+
+Setting the Context
+
+There can be many repetitive values in modules and this can make your code difficult to maintain.
+
+You can centralize these using variables but users will be able to override it.
+
+ 
+
+
+Using Locals
+
+Instead of variables, you can make use of locals to assign the values.
+
+You can centralize these using variables but users will be able to override it.
+
+
+
+
+
+
+
+
+
+
+Module output
+Revising Output Values
+
+Output values make information about your infrastructure available on the command line and can expose information for other Terraform configurations to use.
+
+
+
+Accessing Child Module Outputs
+
+In a parent module, outputs of child modules are available in expressions as module.<MODULE NAME>.<OUTPUT NAME>
+
+
+
+
+
+
+Terraform Registry
+
+The Terraform Registry is a repository of modules written by the Terraform community. The registry can help you get started with Terraform more quickly
+ 
+ 
+
+
+
+Module Location
+
+If we intend to use a module, we need to define the path where the module files are present. The module files can be stored in multiple locations, some of these include:
+●	Local Path
+●	GitHub
+●	Terraform Registry
+●	S3 Bucket
+●	HTTP URLs
+
+
+Verified Modules in Terraform Registry
+
+Within Terraform Registry, you can find verified modules that are maintained by various third-party vendors.
+
+These modules are available for various resources like AWS VPC, RDS, ELB, and others
+
+ 
+Verified modules are reviewed by HashiCorp and actively maintained by contributors to stay up-to-date and compatible with both Terraform and their respective providers.
+
+The blue verification badge appears next to modules that are verified.
+
+Module verification is currently a manual process restricted to a small group of trusted HashiCorp partners.
+
+
+Using Registry Modules in Terraform
+
+
+To use the Terraform Registry module within the code, we can make use of the source argument that contains the module path.
+Below code references the EC2 Instance module within terraform registry. module "ec2-instance" {
+source = "terraform-aws-modules/ec2-instance/aws"
+version = "2.13.0"
+# insert the 10 required variables here
+}
+
+
+Requirement for Publishing Modules in Terraform Registry
+
+Overview of Publishing Modules
+
+Anyone can publish and share modules on the Terraform Registry.
+
+Published modules support versioning, automatically generate documentation, allow browsing version histories, show examples and READMEs, and more.
+ 
+Requirements for Publishing Module
+
+
+
+Standard Module Structure
+
+The standard module structure is a file and directory layout that is recommend for reusable modules distributed in separate repositories
+
+
+
+
+Workspace
+One common need on infrastructure management is to build multiple environments, such as testing and production, with mostly the same setup but keeping a few variables different, like networking and sizing.
+Here configuration file will be same but statefile will be different for each of the environments. 
+Terraform workspace new/list/show/delete/select
+
+provider "aws"{
+	region = "us-east-1"
+}
+resource "aws_instance" "myec2"{
+	ami = "XXXXXXX"
+	instance_type = lookup (var.instance_type, terraform.workspace)
+}
+variable "instance_type"{
+	type = "map"
+	
+	default = {
+		default = "t2.micro"
+		dev = "t2.nano"
+		prod = "t2.large"
+	}
+}
+
+Gitignore
+
+The gitignore file is a text file that tells git which files or folders to ignore in a project.
+Depending on the environments, it is recommended to avoid committing certain files to GIT.
+Files to ignore 	Description
+.terraform	This file is recreated when terraform init is run
+terraform.tfvars	Likely to contain sensitive data like username/password and secrets 
+terraform.tfstate	Should be stored in remote side
+crash.log	If terraform crashes, the logs are stored to a file named crash.log
+
+
+Implementing s3 backend
+
+1)	The terraform code is stored in Git Repository
+2)	The statefile is stored in a central backend
+Statefile is stored in s3 bucket
+terraform {
+	backend “s3” {
+		bucket = “bucket name”
+		key = “file name needs to be stored ie:- terraform.tfstate”
+		region = “ “
+	}
+}
+provider "aws"{
+region = "us-east-1"
+}
+
+resource "aws_instance" "instance-1"{
+    ami = "ami-052efd3df9dad4825"
+    instance_type = "t2.micro"
+}
+
+terraform {
+    backend "s3" {
+        bucket = "ambiterrabucketback"
+        key = "terraform.tfstate"
+        region = "us-east-1"
+    }
+}
+
+
+Statefile lock
+
+State locking is for locking the state during a deployment such that no two terraform processes try to update the same state at the same time. That has nothing to do with protecting your resources from changes by other developers.
+State locking happens automatically on all operations that could write state. You won’t see any message that it is happening. If state locking fails, terraform will not continue. You can disable state locking for most commands with the -lock flag.
+To lock ->tflock
+To check it is locked ->terraform plan
+To unclock -> terraform force-unlock
+
+When lock is applied terraform.tfstate.lock.info file will be created, and which contains the id and other details about lock. 
+Once after the process is complete/unlock happened this file will get deleted.
+
+State-locking in s3
+
+By default s3 does not support state locking functionality.
+You need to make use of DynamoDB table to achieve state locking functionality.
+provider "aws"{
+region = "us-east-1"
+}
+
+resource "aws_instance" "instance-1"{
+    ami = "ami-052efd3df9dad4825"
+    instance_type = "t2.micro"
+}
+
+terraform {
+    backend "s3" {
+        bucket = "ambiterrabucketback"
+        key = "terraform.tfstate"
+        region = "us-east-1"
+	  dynamodb_table = “dynamodb name”
+    }
+}
+
+
+
+Terraform state/statefile management
+list – this command is used to list the resources within a terraform state file (we can see the resources list only after the terraform apply)
+	terraform state list
+move – this command is used to move items in terraform state file.
+This command is also used in many cases in which you want to rename an existing resource without destroying and recreating it.
+Due to the destructive nature of this command, this command will output a backup copy of the state prior to saving any changes.
+	terraform state mv aws_instance.instance_old_name aws_instance.instance_new_name
+pull – this command is used to manually download and output the state from remote state file (stored in s3).
+This is useful for reading values out of state (potentially pairing this command with something like jq)
+	terraform state pull
+push – this command is used to manually upload a local state file to remote state.
+This command is rarely used.
+	terraform state push
+remove – this command is used to remove items from the terraform state.
+Items removed from the terraform state are not physically destroyed.
+Items removed from the terraform state are only no longer managed by terraform.
+For example: - if u remove an aws instance from the state, the aws instance will continue running, but terraform plan will no longer see that instance.
+	terraform state rm aws_instance.myec2
+If u do terraform plan or apply next time, it will create new instance.
+show – this command is used to show the attributes of a single resource in the terraform state file.
+	terraform state show aws_instance.myec2
+
+
+
+Connecting Remote States
+The terraform_remote_state data source retrieves the root module output values from some other Terraform configuration, using the latest state snapshot from the remote backend.
+
+When we create a resource the state file will store in s3 bucket. And the output like public ip will be created.
+If we want to whitelist those output ip’s (created in project 1), in project 2 using security group, we need to fetch the output values and then whitelist.
+To do this we need to use terraform_remote_state. 
+
+
+
+
+Create a Project with Output Values & S3 Backend
+
+
+
+
+
+
+
+
+
+
+ Reference Output Values from Different Project
+
+
+
+In cidr blocks we need to mention the path from which it has to fetch the data (that is data block)
+
+
+
+Terraform Import
+
+It might happen that there is a resource that is already created manually.
+
+In such a case, any change you want to make to that resource must be done manually.
+
+ Terraform can import existing infrastructure. This allows you to take resources you've       created by some other means and bring it under Terraform management.
+
+The current implementation of Terraform import can only import resources into the state. It does not generate configuration. A future version of Terraform will also generate configuration.
+
+Because of this, prior to running terraform import it is necessary to write manually a resource configuration block for the resource, to which the imported object will be mapped.
+
+
+Terraform provider use case-Resource in multiple region
+
+If we want to create different resources in different availability zone, then we cannot mention two providers in the tf file. To make that to work we use following syntax: -
+
+provider “aws” {
+	region = “us-east-1”
+}
+
+Provider “aws” {
+	alias = “Mumbai”
+	region = “ap-south-1”
+}
+Resources in specified region
+resource “aws_eip” “myeip” {
+	Vpc = “true”
+}
+resource “aws_eip” “myeip1” {
+	Vpc = “true”
+	provider = “aws.mumbai”
+}
+This will create myeip1 in Mumbai region
+
+Resources in different account
+provider “aws” {
+	region = “us-east-1”
+}
+
+provider “aws” {
+	alias = “Mumbai”
+	region = “ap-south-1”
+	profile = “profile name”
+}
+If we mention our profile name in the provider block, then that particular resource which is using this provider will be created in that account (profile).
+
