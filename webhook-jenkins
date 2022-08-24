@@ -1,0 +1,26 @@
+In Git Repository:
+>Goto Github
+>Select and click om the repository
+>Goto to the settings of that repository 
+>Select Webhooks under Code and automation option
+>In Payload URL * >> http://IP_Address:8080/github-webhook/ 
+>In Which events would you like to trigger this webhook?
+Choose --> Let me select individual events and select only Pushes and Pull equests.
+>Add Webhook
+
+In Jenkins:
+>In Source Code Management select Git
+	Provide Repository URL >> https://github.com/username/hello-world-war.git
+
+>Build Triggers
+	check GitHub hook trigger for GITScm polling
+
+>Build
+	mvn clean package
+
+In Github:
+Edit the file and commit the changes.
+
+In Repository setting > Webhooks > It will show the status of last delivery is success or failure. If success,
+
+In Jenkins > Build Now > Once completed > Build History and check Console Output.
