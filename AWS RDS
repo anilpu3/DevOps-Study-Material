@@ -1,0 +1,50 @@
+AWS RDS :-
+sudo apt-get update
+# For Sql-client
+sudo apt-get install mysql-client
+
+# For python and related frameworks
+sudo apt-get install python3
+sudo apt-get install python3-flask
+sudo apt-get install python3-pymysql
+sudo apt-get install python3-boto3
+
+# for running application
+sudo python3 Empapp.py
+	
+RDS - MySql Cmds
+sudo -i
+apt update 
+mysql -h <rds_endpoint> -u <user_name> -p
+give the passwrd
+
+mysql> show databases; (shows existing and newly created databases)
+mysql> create database <database_name>; (create new database)
+eg:- mysql> create database employee;
+mysql> show databases;
+mysql> use <database_name> (switch or change or get inside the database)
+eg:- mysql> use employee;
+mysql> create table <table_name>; (create tables inside the database)
+eg:- mysql> create table engineer (empid varchar(20), fname varchar(20), lname varchar(20), pri_skill varchar(20), location varchar(20));
+mysql> show tables; (shows existing and newly created tables)
+mysql> describe <table_name>;
+eg:- mysql> describe engineer; (gives field , type etc), see below
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| empid     | varchar(20) | YES  |     | NULL    |       |
+| fname     | varchar(20) | YES  |     | NULL    |       |
+| lname     | varchar(20) | YES  |     | NULL    |       |
+| pri_skill | varchar(20) | YES  |     | NULL    |       |
+| location  | varchar(20) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+mysql> select * from <table_name>; (shows table Information)
+eg:- mysql> select * from engineer; (see below)
++-------+-------+-------+-----------+-----------+
+| empid | fname | lname | pri_skill | location  |
++-------+-------+-------+-----------+-----------+
+| 1     | ambi  | ns    | aws       | Mandya    |
+| 2     | anil  | pu    | no skill  | bangalore |
++-------+-------+-------+-----------+-----------+
+mysql> drop table <table_name>; (remove table from the database)
+eg:- mysql> drop table engineer;
