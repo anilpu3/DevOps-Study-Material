@@ -1,0 +1,32 @@
+=============================================================================================
+EKS
+=============================================================================================
+Cluster creation
+	- cluster can be created manually.
+	- cluster can be created usin eksctl.
+
+Manual Cluster Creation
+Cluster policy 
+	- AmazonEKSClusterPolicy
+
+Node policy
+	- AmazonEKSWorkerNodePolicy
+	- AmazonEKS_CNI_Policy
+	- AmazonEC2ContainerRegistryReadOnly
+
+To access node via linux machine
+
+- install docker
+	- sudo yum install docker.io
+	- docker --version
+
+- install awscli
+	- sudo yum install awscli
+	- aws --version
+
+- configure credentials 
+	- aws configure
+	- giv Access key ID, Secret access key, region.
+
+- install kubectl based on the selected kubernetes version while creatin the cluster
+	- https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
