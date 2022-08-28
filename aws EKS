@@ -52,5 +52,9 @@ Integrate linux machine with the Cluster
 	aws eks update-kubeconfig --name namma-eks-cluster --region us-east-1
 	aws eks update-kubeconfig --name namma-eks-cluster --region us-east-1 --role-arn arn:aws:iam::505883253114:role/namma-eks-cluster-policy-role
 	
-	
+	aws sts get-caller-identity // To see the configuration of your AWS CLI user or role, run the following command
+	aws eks update-kubeconfig --name eks-cluster-name --region aws-region // Update or generate the kubeconfig file using one of the following commands
+	aws eks update-kubeconfig --name eks-cluster-name --region aws-region --role-arn arn:aws:iam::XXXXXXXXXXXX:role/testrole // As the IAM role, run the following command
+	kubectl config view --minify    //To confirm that the kubeconfig file is updated, run the following command
+	kubectl get svc    //To confirm that your IAM user or role is authenticated, run the following command
 
