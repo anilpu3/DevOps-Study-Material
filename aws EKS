@@ -2,10 +2,10 @@
 EKS
 =============================================================================================
 Cluster creation
-	- cluster can be created manually.
-	- cluster can be created usin eksctl.
+	- EKS cluster can be created manually via Console.
+	- EKS cluster can be created usin eksctl (cmdline interface).
 
-Manual Cluster Creation
+Manual Cluster Creation (Console)
 Cluster policy 
 	- AmazonEKSClusterPolicy
 
@@ -14,19 +14,43 @@ Node policy
 	- AmazonEKS_CNI_Policy
 	- AmazonEC2ContainerRegistryReadOnly
 
+Note - we can also create Fargate to deploy pods.
+
 To access node via linux machine
 
 - install docker
-	- sudo yum install docker.io
+	- sudo apt install docker.io
 	- docker --version
 
 - install awscli
-	- sudo yum install awscli
+	- sudo apt install awscli
 	- aws --version
 
 - configure credentials 
 	- aws configure
-	- giv Access key ID, Secret access key, region.
+	- giv access key ID, secret access key, region and output format.
 
 - install kubectl based on the selected kubernetes version while creatin the cluster
 	- https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
+	
+Kubernetes 1.23
+step 1 - curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.7/2022-06-29/bin/linux/amd64/kubectl
+step 2 - curl -o kubectl.sha256 https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.7/2022-06-29/bin/linux/amd64/kubectl.sha256
+step 3 - openssl sha1 -sha256 kubectl
+step 4 - chmod +x ./kubectl
+step 5 - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+step 6 - echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+step 7 - kubectl version --short --client
+
+Integrate linux machine with the Cluster
+	- aws eks update-kubeconfig --region region-code --name name_of_the_cluster
+	eg - aws eks update-kubeconfig --region us-east-1 --name namma-eks-cluster
+	
+	aws eks --region us-east-1 describe-cluster --name namma-eks-cluster --query cluster.status
+	
+	
+	aws eks update-kubeconfig --name namma-eks-cluster --region us-east-1
+	aws eks update-kubeconfig --name namma-eks-cluster --region us-east-1 --role-arn arn:aws:iam::505883253114:role/namma-eks-cluster-policy-role
+	
+	
+
