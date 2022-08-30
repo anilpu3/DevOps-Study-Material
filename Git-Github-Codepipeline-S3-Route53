@@ -1,4 +1,24 @@
+================================================================================================================================================================
+Ec2
+================================================================================================================================================================
+Update Repo (sudo apt-get update)
+Install git (sudo apt install git)
+Install awscli (sudo apt install awscli)
+Create S3 role (amazons3fullaccess) and attach it to the Ec2 instance
+Clone a repo from github or vice versa
+let us take index.html as an example (<html><body><h1> "namma connection" </h1></body></html>)
+git add index.html
+git commit -m "namma index.html"
+git status
+git push origin master (say if in case, the branch name s differnt, specify the same)
+giv github id and password
+================================================================================================================================================================
+S3 Bucket
+================================================================================================================================================================
+
+================================================================================================================================================================
 CodePipeline
+================================================================================================================================================================
 Create Pipeline
 	Step1 - Choose pipeline settings
 		      - giv a name and create a new role
@@ -20,3 +40,4 @@ Create Pipeline
 		    - then check box extract file before deploy
 	Step5 - Review
 		    - Review the setting and click on create pipeline
+==================================================================================================================================================================
