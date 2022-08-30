@@ -5,7 +5,7 @@ Cluster creation
 	- EKS cluster can be created manually via Console.
 	- EKS cluster can be created usin eksctl (cmdline interface).
 
-Manual Cluster Creation (Console)
+1> Manual Cluster Creation (Console)
 Cluster policy 
 	- AmazonEKSClusterPolicy
 
@@ -14,7 +14,7 @@ Node policy
 	- AmazonEKS_CNI_Policy
 	- AmazonEC2ContainerRegistryReadOnly
 
-Note - we can also create Fargate to deploy pods.
+Note - we can also create Fargate to deploy pods (Nat gateway s required - private subnets)
 
 To access node via linux machine
 
@@ -43,18 +43,41 @@ step 6 - echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
 step 7 - kubectl version --short --client
 
 Integrate linux machine with the Cluster
-	- aws eks update-kubeconfig --region region-code --name name_of_the_cluster
-	eg - aws eks update-kubeconfig --region us-east-1 --name namma-eks-cluster
+
+	- aws eks --region <region-code> describe-cluster --name <name_of_the_cluster> --query cluster.status // gives status of the cluster 
+		eg:- aws eks --region us-east-1 describe-cluster --name namma-eks-cluster --query cluster.status //you will hav to get the console output as "Active"
+		
+	- aws eks update-kubeconfig --region <region-code> --name <name_of_the_cluster> // updates the present cluster configuration details to config file
+		eg:- aws eks update-kubeconfig --region us-east-1 --name namma-eks-cluster
 	
-	aws eks --region us-east-1 describe-cluster --name namma-eks-cluster --query cluster.status
-	
-	
-	aws eks update-kubeconfig --name namma-eks-cluster --region us-east-1
-	aws eks update-kubeconfig --name namma-eks-cluster --region us-east-1 --role-arn arn:aws:iam::505883253114:role/namma-eks-cluster-policy-role
+	- aws eks update-kubeconfig --name namma-eks-cluster --region us-east-1 // update the present policy cluster configuration to config file
+		eg:- aws eks update-kubeconfig --name namma-eks-cluster --region us-east-1 --role-arn arn:aws:iam::505883253114:role/namma-eks-cluster-policy-role
 	
 	aws sts get-caller-identity // To see the configuration of your AWS CLI user or role, run the following command
 	aws eks update-kubeconfig --name eks-cluster-name --region aws-region // Update or generate the kubeconfig file using one of the following commands
 	aws eks update-kubeconfig --name eks-cluster-name --region aws-region --role-arn arn:aws:iam::XXXXXXXXXXXX:role/testrole // As the IAM role, run the following command
-	kubectl config view --minify    //To confirm that the kubeconfig file is updated, run the following command
-	kubectl get svc    //To confirm that your IAM user or role is authenticated, run the following command
+	kubectl config view --minify    // To confirm that the kubeconfig file is updated, run the following command
+	kubectl get svc    // To confirm that your IAM user or role is authenticated, run the following command
 
+EKS cluster usin eksctl (cmdline interface)
+- Install eksctl on linux machine
+	- curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+	- sudo mv /tmp/eksctl /usr/local/bin
+	- eksctl version
+
+Cluster creation
+- Managed nodes
+	- eksctl create cluster --name <cluster_name> --region <region-code>
+		eg:- eksctl create cluster --name namma-eks-cluster --region us-east-1
+
+- Fargate
+	- eksctl create cluster --name <cluster_name> --region <region-code> --fargate
+		eg:- eksctl create cluster --name namma-eks-cluster --region us-east-1 --fargate
+		
+- Delete Cluster
+	- eksctl delete cluster --name <cluster_name> --region <region-code>				
+		eg:- eksctl delete cluster --name namma-eks-cluster --region us-east-1
+
+
+
+	
