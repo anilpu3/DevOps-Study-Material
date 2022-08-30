@@ -1,0 +1,39 @@
+cat << EOF > /root/namma-deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: namma-deployment
+spec: 
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: nammaapps
+  template:
+    metadata:
+      name: namma-deployment
+      labels:
+        app: nammaapps
+    spec: 
+      containers: 
+        - name: namma
+          image: httpd
+   
+apiVersion: v1
+kind: Service
+metadata:
+  name: namma-node-service
+spec:
+  type: NodePort
+  selector: 
+    app: nammaapps
+  ports:
+    - protocol: TCP
+      nodePort: 30000
+      port: 80
+      targetPort: 80  
+EOF     
