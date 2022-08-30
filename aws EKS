@@ -69,16 +69,95 @@ Integrate linux machine with the Cluster
 Cluster creation
 - Managed nodes
 	- eksctl create cluster --name <cluster_name> --region <region-code>
-		eg:- eksctl create cluster --name namma-eks --region us-east-1
+		eg:- eksctl create cluster --name namma-eks-cluster --region us-east-1
 
 - Fargate
 	- eksctl create cluster --name <cluster_name> --region <region-code> --fargate
-		eg:- eksctl create cluster --name namma-eks --region us-east-1 --fargate
+		eg:- eksctl create cluster --name namma-eks-cluster --region us-east-1 --fargate
 		
 - Delete Cluster
 	- eksctl delete cluster --name <cluster_name> --region <region-code>				
 		eg:- eksctl delete cluster --name namma-eks-cluster --region us-east-1
 
 
+eksctl create cluster \
+--name namma-eks-cluster \
+--version 1.23 \
+--region us-east-1 \
+--nodegroup-name namma-eks-node \
+--node-type t3.micro \
+--nodes 2
+--nodes-min 2 \
+--nodes-max 4 \
+--ssh-access \
+--ssh-public-key mykey
 
+--vpc-public-subnets subnet-public-ID1,subnet-publicI-D2 \
+--vpc-private-subnets subnet-private-ID1,subnet-private-ID2 \
+
+To update a node group version
+eksctl upgrade nodegroup \
+--name=namma-eks-node \
+--cluster=namma-eks-cluster \
+--kubernetes-version=1.23
+
+Node taints on managed node groups
+aws eks create-nodegroup \
+ --cli-input-json '
+{
+  "clusterName": "namma-eks-cluster",
+  ...
+  "taints": [
+     {
+         "key": "color",
+         "value": "red",
+         "effect": "NO_SCHEDULE"
+     }
+   ],
+}'
+Note: - The effect must be one of No_Schedule, Prefer_No_Schedule, or No_Execute.
+
+To delete a managed node group
+eksctl delete nodegroup \
+  --cluster namma-eks-cluster \
+  --region us-east-1 \
+  --name namma-eks-node
+
+Launch Node Configuration
+Amazon Linux
+eksctl create nodegroup \
+  --cluster namma-eks-cluster \
+  --name namma-eks-node \
+  --node-type t3.micro \
+  --nodes 3 \
+  --nodes-min 1 \
+  --nodes-max 4 \
+  --ssh-access \
+  --managed=false \
+  --ssh-public-key mykey
+eksctl create nodegroup --help
+
+Windows 
+eksctl create nodegroup \
+    --region us-east-1 \
+    --cluster namma-eks-cluster \
+    --name namma-eks-node \
+    --node-type t3.micro \
+    --nodes 3 \
+    --nodes-min 1 \
+    --nodes-max 4 \
+    --managed=false \
+    --node-ami-family WindowsServer2019FullContainer
+eksctl command -help
+
+AWS Fargate
+To create a Fargate profile
+eksctl create fargateprofile \
+    --cluster namma-eks-cluster \
+    --name namma-fargate-profile \
+    --namespace namma-kubernetes-namespace \
+    --labels color=red // key=value
+
+Deleting a Fargate profile
+eksctl delete fargateprofile  --name namma-fargate-profile --cluster namma-eks-cluster
 	
