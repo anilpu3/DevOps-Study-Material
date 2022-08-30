@@ -1,0 +1,107 @@
+================================================================================================
+Pods and Nodes
+================================================================================================
+1) To create pods
+* kubectl apply -f <filename.yml>
+* kubectl run <pod_name> --image=<image_name>
+
+2) To check the available pods
+* kubectl get pods
+
+3) To check on which node pods are running
+* kubectl get pods -owide
+
+4) To check the nodes
+* kubectl get nodes
+
+5) To delete the pods
+* kubectl delete pod <pod_name>
+* kubectl delete -f <pods_yaml_filename>
+
+6) To see details about pod
+* kubectl describe pod <pod_name>
+=================================================================================================
+ReplicaSet
+=================================================================================================
+1) To create replicaset
+* kubectl apply -f <file_name.yml>
+
+2) To check the replica set
+* kubectl get rs/replicaset
+
+3) To increase the number of replicas 
+* this can be done by changing the value inside the yml file
+* kubectl scale --replicas=5 -f <file_name.yml> (it will not update the replicas ie:- 5 inside the yml file)
+
+4) To replace or update 
+* kubectl replace -f <file_name.yml>
+
+5) To delete the replicaset
+* kubectl delete rs/replicaset <replicaset name>
+* kubectl delete -f rs/replicaset <file_name.yml>
+=================================================================================================
+Deployment
+=================================================================================================
+1) To create deployment
+* kubectl apply -f <file_name.yml>
+
+2) To know the deployments
+* kubectl get deployments
+
+3) To know all like deployment, replicaset and pods
+* kubectl get all
+
+4) To delete deployment
+* kubectl delete -f <file_name.yml>
+* kubectl delete deployment <deployment name>
+================================================================================================
+Taint and Toleration
+================================================================================================
+1) To taint a node
+* kubectl taint node <node_name> key=value:Noschedule (key value may be anything ex: colour=blue)
+
+2) To untaint a node
+* kubectl taint node <node_name> key=value:Noschedule-
+
+3) To check the taint is applied or not
+* kubectl describe <name of the node>
+================================================================================================
+Node Selector
+================================================================================================
+1) To label the node
+* kubectl label node <node_name> <key>=<value> (key_value may be anything ex:- environment=red)
+
+2) To list the nodes in your cluster
+* kubectl get nodes --show-labels
+================================================================================================
+Namespaces
+================================================================================================
+1) To create namespaces
+* kubectl create namespace <namespace_name>
+* kubectl create -f <namespace_filename.yml>
+
+2)To check the namespaces
+* kubectl get namespaces 
+
+3) To get summary or details of a namespace
+* kubectl get namespace <namespace_name>
+* kubectl describe namespace <namespace_name>
+
+4) To delete the namespace
+* kubectl delete namespace <namespace_name>
+================================================================================================
+Cordon and Drain
+================================================================================================
+1) To unschedule a node
+* kubectl cordon <node_name>
+
+2) To drain a node
+* kubectl drain <node_name>
+================================================================================================
+Extras
+================================================================================================
+1) To create yaml file using a single command
+* kubectl run pod_name –image=image_name –dry-run=client -o yaml > pod.yaml
+
+2) To check the services
+* kubectl get services/svc
