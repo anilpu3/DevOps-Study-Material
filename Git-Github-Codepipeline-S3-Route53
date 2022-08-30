@@ -1,0 +1,22 @@
+CodePipeline
+Create Pipeline
+	Step1 - Choose pipeline settings
+		      - giv a name and create a new role
+	Step2 - Add source stage
+		    - From drop down select Source Provider as GitHub (Version 1)
+		    - Click Connect to GitHub (login and connect to github) post which "Connected" 
+		    - Once you connect to github, you could see your repositories, select the repo where the index.file s copied (select the respective repo)
+			        eg: - Repository  - anilpu3/hello-world-war
+		    - then select respective branch
+			        eg:- Branch - master
+		    - Change detection options
+			        select Github webhooks
+	Step3 - Add source stage
+		    - skip build stage.
+	Step4 - Add deploy stage
+		    - select Deploy provider as Amazon S3 
+		    - select Region 
+		    - select Bucket 
+		    - then check box extract file before deploy
+	Step5 - Review
+		    - Review the setting and click on create pipeline
