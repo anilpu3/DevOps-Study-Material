@@ -59,7 +59,8 @@ Integrate linux machine with the Cluster
 	kubectl config view --minify    // To confirm that the kubeconfig file is updated, run the following command
 	kubectl get svc    // To confirm that your IAM user or role is authenticated, run the following command
 
-EKS cluster usin eksctl (cmdline interface)
+
+2> EKS cluster usin eksctl (cmdline interface)
 - Install eksctl on linux machine
 	- curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 	- sudo mv /tmp/eksctl /usr/local/bin
@@ -68,11 +69,11 @@ EKS cluster usin eksctl (cmdline interface)
 Cluster creation
 - Managed nodes
 	- eksctl create cluster --name <cluster_name> --region <region-code>
-		eg:- eksctl create cluster --name namma-eks-cluster --region us-east-1
+		eg:- eksctl create cluster --name namma-eks --region us-east-1
 
 - Fargate
 	- eksctl create cluster --name <cluster_name> --region <region-code> --fargate
-		eg:- eksctl create cluster --name namma-eks-cluster --region us-east-1 --fargate
+		eg:- eksctl create cluster --name namma-eks --region us-east-1 --fargate
 		
 - Delete Cluster
 	- eksctl delete cluster --name <cluster_name> --region <region-code>				
