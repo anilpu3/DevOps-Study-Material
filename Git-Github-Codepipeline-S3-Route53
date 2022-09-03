@@ -11,16 +11,18 @@ git add index.html
 git commit -m "namma index.html"
 git status
 git push origin master (say if in case, the branch name s differnt, specify the same)
-giv github id and password
+giv github id and token
+
 ================================================================================================================================================================
 S3 Bucket
 ================================================================================================================================================================
 Create s3 bucket as same as you're domain name
 ambi.fun (domain name cum bucket name)
 upload static website files to s3 bucket (you can also copy files using Ec2 instance, see below cmd)
-aws s3 cp index.html s3://<bucket-name> (takin only one file for demo purpose)
+aws s3 cp index.html s3://<bucket-name> (copyin only one file for demo purpose)
 aws s3 cp index.html s3://ambi.fun
-once, the files are uploaded,
+once,the files are uploaded,
+
 click on Permissions tab
 Edit Bucket policy (you can see the Edit button to your right)
 Note down the Bucket ARN, it looks sumthin like dis "arn:aws:s3:::ambi.fun"
@@ -64,7 +66,25 @@ Policy would be created which looks like below
 copy the policy and go back to the Bucket policy and paste the copied policy.
 click "Save changes"
 Note:- you might get an error "Unknown Error" (An unexpected error occurred.) while savin the changes, don't panic,
-you wil jus hav to remove few spaces before the flower bracket "{" in 1st line of the policy.) and save changes.
+you wil jus hav to remove few spaces before the flower bracket "{" in 1st line of the policy.) and save the changes.
+
+click on Properties tab
+Edit Static website hosting (go below to the end to find the Static website hosting)
+Static website hosting
+	- select "Enable"
+	- click on save changes
+Hosting type
+	- select "Host a static website"
+
+Index document - Specify the home or default page of the website.
+In our case its "index.html"
+
+Error document - optional (its optional, you can giv if it s required)
+
+click on "Save changes"
+you can cum below to the end and you can find the Bucket website endpoint which looks as below
+http://ambi.fun.s3-website-us-east-1.amazonaws.com
+
 ================================================================================================================================================================
 CodePipeline
 ================================================================================================================================================================
@@ -90,3 +110,17 @@ Create Pipeline
 	Step5 - Review
 		    - Review the setting and click on create pipeline
 ==================================================================================================================================================================
+Route 53
+=============================================================================================
+click on hosted zone
+get inside you're domain name 
+create a record
+	- Record name (you can leave it blank or you can giv any sub domain details)
+	- Record type ( select A - Routes traffic to an IPV4 address and some AWS resources)
+	- check Alias
+		- Route traffic to (select "Alias to s3 website endpoint)
+		- choose region (choose the region, where the s3 bucket was created)
+		- select the s3 endpoint from the drop box.
+	Routin policy - select as "Simple routin" from the drop box.
+click on create records	
+===================================================================================================================================================================
