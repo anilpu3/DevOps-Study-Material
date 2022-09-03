@@ -1,0 +1,36 @@
+Recover key using another EC2 Instance
+
+old instance (lost key) - detach volume from the instacne, make sure you note down the instance id and the volume id.
+new instance (new key) - attach the old instance volume to the newly created instance, run the instance (can be run directly or you can use putty or Mobxterm) and follow the below steps.
+Note:- make sure, you have or select the same availability zone of the old instance, while creatin new instance. 
+
+lsblk (list the mounted/unmounted volumes)
+lsblk -fp
+sudo mkdir /mnt/namma-tmp-vol (Let's create that temporary folder first.)
+sudo mount /dev/xvdf1 /mnt/namma-tmp-vol (command to mount partition in Ubuntu or Debian)
+sudo mount -o nouuid /dev/xvdf1 /mnt/namma-tmp-vol (command to mount partition in CentOS, SUSE Linux 12, or RHEL 7.x)
+
+======================================================================================================
+sudo fsck /dev/xvdf1 (If you get an error stating that the file system is corrupt, run the following command to use the fsck utility to check the file system and repair any issue.)
+======================================================================================================
+
+cp .ssh/authorized_keys /mnt/namma-tmp-vol/home/ubuntu/.ssh/authorized_keys (if you use Ubuntu, use the following command to update authorized_keys on the mounted volume with the new public key from the authorized_keys for the temporary instance.)
+If this copy succeeded, you can go to the next step. before that you can go inside the dir and check and confirm.
+vi .ssh/authorized_keys /mnt/namma-tmp-vol/home/ubuntu/.ssh/authorized_keys
+
+==============================================================================================================
+(Optional) Otherwise, if you don't have permission to edit files in /mnt/tempvol, you must update the file using sudo and then check the permissions on the file to verify that you are able to log into the original instance. Use the following command to check the permissions on the file.
+sudo ls -l /mnt/namma-tmp-vol/home/ubuntu/.ssh
+sudo cp .ssh/authorized_keys /mnt/namma-tmp-vol/home/ubuntu/.ssh/authorized_keys
+sudo chown ubuntu:ubuntu /mnt/namma-tmp-vol/home/ubuntu/.ssh/authorized_keys (update ownership to the original ubuntu:ubuntu.)
+===============================================================================================================
+
+sudo umount /mnt/namma-tmp-vol (unmount the volume that you attached so that you can reattach it to the original instance.)
+
+Detach volume. Reattach the volume to the original instance.With the volume still selected, choose Actions, Attach Volume. Select the instance ID of the original instance, specify the device name that you noted earlier for the original root device attachment (/dev/sda1 or /dev/xvda), and then choose Attach.
+If you don't specify the same device name as the original attachment, you cannot start the original instance. Amazon EC2 expects the root device volume at sda1 or /dev/xvda.
+Start the instance and grab a new public IP address. Now you can use the new-key to SSH to the original instance.
+ssh -i ~/Downloads/new-key.pem ubuntu@ip
+
+
+
