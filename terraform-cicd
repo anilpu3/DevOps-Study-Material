@@ -1,0 +1,40 @@
+pipeline {
+agent any
+
+stages {
+	stage('terraform Init')
+		steps {
+			dir('./gitops') {
+				sh '/usr/local/bin/terraform init'
+		}
+	}
+}
+
+stage('terraform plan')
+	steps {
+			dir('./gitops') {
+				sh '/usr/local/bin/terraform plan'
+		}
+	}
+}
+
+stage('Approval') {
+	when { branch 'master' }
+	steps {
+		script {
+			waitUntil {
+			    fileExists('namma-dummy-file')
+			}
+		}
+	}
+}
+
+stage('terraform plan')
+	steps {
+			dir('./gitops') {
+				sh '/usr/local/bin/terraform apply -auto-approve'
+			}
+		}	
+	}
+}
+}
