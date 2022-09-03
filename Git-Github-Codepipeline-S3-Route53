@@ -1,10 +1,10 @@
 ================================================================================================================================================================
-Ec2
+Ec2 Instance
 ================================================================================================================================================================
 Update Repo (sudo apt-get update)
 Install git (sudo apt install git)
 Install awscli (sudo apt install awscli)
-Create S3 role (amazons3fullaccess) and attach it to the Ec2 instance
+Create s3 role (amazons3fullaccess) and attach it to the Ec2 instance
 Clone a repo from github or vice versa
 let us take index.html as an example (<html><body><h1> "namma connection" </h1></body></html>)
 git add index.html
@@ -15,7 +15,56 @@ giv github id and password
 ================================================================================================================================================================
 S3 Bucket
 ================================================================================================================================================================
+Create s3 bucket as same as you're domain name
+ambi.fun (domain name cum bucket name)
+upload static website files to s3 bucket (you can also copy files using Ec2 instance, see below cmd)
+aws s3 cp index.html s3://<bucket-name> (takin only one file for demo purpose)
+aws s3 cp index.html s3://ambi.fun
+once, the files are uploaded,
+click on Permissions tab
+Edit Bucket policy (you can see the Edit button to your right)
+Note down the Bucket ARN, it looks sumthin like dis "arn:aws:s3:::ambi.fun"
+click on Policy generator (you can see the Policy generator button to your right next to Policy examples)
+Policy generator opens up in a separate tab
+AWS Policy Generator
 
+Step 1: Select Policy Type
+	- Select Type of Policy - select s3 Bucket Policy from the drop box
+
+Step 2: Add Statement(s)
+	- Effect - let it be default ie "Allow"
+	- Principal - giv "*"
+	- AWS Service would be already selected as "Amazon s3"
+	- Actions - check "GetObject" from the drop box
+	- Amazon Resource Name (ARN) - giv the arn number followed by /*, which was noted before ie "arn:aws:s3:::ambi.fun"
+		- arn:aws:s3:::ambi.fun/*
+Once, the details are filled, click on "Add Statement" button.
+You added the following statements. clck the button below to Generate a policy.
+
+Step 3: Generate Policy
+click on the Generate Policy
+Policy would be created which looks like below
+
+{
+  "Id": "Policy1662171684103",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1662171634521",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::ambi.fun/*",
+      "Principal": "*"
+    }
+  ]
+}
+
+copy the policy and go back to the Bucket policy and paste the copied policy.
+click "Save changes"
+Note:- you might get an error "Unknown Error" (An unexpected error occurred.) while savin the changes, don't panic,
+you wil jus hav to remove few spaces before the flower bracket "{" in 1st line of the policy.) and save changes.
 ================================================================================================================================================================
 CodePipeline
 ================================================================================================================================================================
