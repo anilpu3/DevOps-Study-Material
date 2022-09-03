@@ -98,6 +98,38 @@ Cordon and Drain
 2) To drain a node
 * kubectl drain <node_name>
 ================================================================================================
+Helm
+================================================================================================
+1) To create or build our own helm chart
+* helm create <chart_name>
+
+2) Before installing helm, to check the our created helm is error free or not
+* helm install --debug --dry-run <release_name(any_name)> ./<our_helmchart_name>
+
+3) To deploy our chats
+* helm install <release_name> ./<our_helmchart_name>
+
+4) To check the deployment we done
+* helm ls
+
+5) To delete the chart
+* helm del <chart_name>
+
+6) If we made any changes in yaml files and need to update it
+* helm upgrade <release_name> ./<our_helmchart_name>
+
+7) To update any variables 
+* helm upgrade <release_name> ./<our_helmchart_name> --set <variable_name>=<value_to_be_changed>
+* ex:- helm upgrade tomcat-chart ./my-helm --set port=8090
+
+8) To override the deployment with actual file
+* helm upgrade -f <our_helmchar_name>/values.yml <release_name> ./<our_helmchar_name>
+* ex:- helm upgrade -f my-helm/values.yml tomcat-chart ./my-helm (this will increase the replicaset)
+
+9) To go back to older versions
+* helm rollback <release_name> <version_number>
+* ex:- helm rollback tomcat-chart 3
+================================================================================================
 Extras
 ================================================================================================
 1) To create yaml file using a single command
