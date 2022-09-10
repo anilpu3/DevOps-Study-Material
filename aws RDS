@@ -50,3 +50,11 @@ eg:- mysql> select * from engineer; (see below)
 +-------+-------+-------+-----------+-----------+
 mysql> drop table <table_name>; (remove table from the database)
 eg:- mysql> drop table engineer;
+=====================================================================
+use Jail;
+Drop table prision;
+drop database Jail;
+CREATE DATABASE Jail;
+use Jail;
+CREATE TABLE prision(criminal_id varchar(20), first_name varchar(20), last_name varchar(20), case_name varchar(20), location varchar(20));
+======================================================================
