@@ -1,3 +1,4 @@
+Deploying End to End Website on AWS | Integrating EC2, Route 53 and RDS
 https://github.com/hshar94/aws-live
 https://www.youtube.com/watch?v=oWf6hH4iRP4&ab_channel=Intellipaat
 
@@ -11,9 +12,9 @@ sudo apt-get install mysql-client -y
 
 # For python and related frameworks
 sudo apt-get install python3 -y
-sudo apt-get install python3-flask -y
-sudo apt-get install python3-pymysql -y
-sudo apt-get install python3-boto3 -y
+sudo apt-get install python3-flask -y		# helps python to host a website on the server
+sudo apt-get install python3-pymysql -y		# s a library which helps to connect website to the mysql server 
+sudo apt-get install python3-boto3 -y		# aws sdk's basically used to connect to s3 service were we upload our files
 
 # for running application
 sudo python3 Empapp.py
