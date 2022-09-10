@@ -1,6 +1,9 @@
 https://github.com/hshar94/aws-live
 https://www.youtube.com/watch?v=oWf6hH4iRP4&ab_channel=Intellipaat
 
+AWS s3 bucket
+create s3 role and attach it to the ec2 instance
+
 AWS RDS :-
 sudo apt-get update
 # For Sql-client
