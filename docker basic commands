@@ -15,6 +15,7 @@ inspect
 docker inspect - it s used to get the information/details of container or volume.
 docker inspect <container id>
 docker inspect <voulme_name>
+docker image inspect <image_name> -f '{{ .ContainerConfig.ExposedPorts }}' # to see which ports this image has exposed
 
 tag
 docker tag - it s used to tag the docker image with differnt name or used to rename the docker image.
