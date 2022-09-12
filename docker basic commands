@@ -45,3 +45,7 @@ Prune - used to remove stopped container, Images and volumes
 docker system prune : used to remove all the unused docker objects
 docker images prune : used to remove unsued images along with danglin images
 docker volume prune : used to remove unused volumes.
+
+Dockerfile
+sudo docker build -t --build-arg <key=value> <image-name> . (override ARG)
+  eg:- sudo docker build -t --build-arg passwrd=1234tech nammaimage .
