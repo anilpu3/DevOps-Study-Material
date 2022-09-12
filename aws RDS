@@ -63,3 +63,29 @@ CREATE DATABASE Jail;
 use Jail;
 CREATE TABLE prision(criminal_id varchar(20), first_name varchar(20), last_name varchar(20), case_name varchar(20), location varchar(20));
 ======================================================================
+Dockerfile
+======================================================================
+FROM ubuntu
+#FROM mysql
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install mysql-client -y
+RUN apt-get install python3 -y
+RUN apt-get install python3-flask -y
+RUN apt-get install python3-pymysql -y
+RUN apt-get install python3-boto3 -y
+#RUN apt-get install awscli -y
+#RUN aws s3 mb s3://ambi.fun 
+#COPY s3_bucket.sh .
+#RUN sh s3_bucket.sh
+RUN mkdir -p RDS
+WORKDIR /RDS
+COPY . .
+#ENV passwrd=iquadtech
+ARG passwrd=*****
+RUN  mysql -h namma-database.cychouziopiu.us-east-1.rds.amazonaws.com -u ambi -p$passwrd < jailer_details.sql
+EXPOSE 80
+ENTRYPOINT python3 EmpApp.py
+
+override ARG
+sudo docker build -t --build-arg passwrd=iquadtech nammaimage .
+
