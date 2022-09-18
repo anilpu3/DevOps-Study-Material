@@ -1,0 +1,3 @@
+to check the user data which is given durin provisionin
+ssh or get into the instance and run below 
+curl http://169.254.169.254/latest/user-data
