@@ -1,0 +1,29 @@
+Operatin System Linux Ubuntu
+
+1) Update the system.
+	apt-get update
+
+2) Install Gnupg2 package
+	apt-get install gnupg2 
+
+3) Add Repo & Key
+	wget -qO - https://api.bintray.com/orgs/jfrog/keys/gpg/public.key | apt-key add -
+	echo "deb https://jfrog.bintray.com/artifactory-debs bionic main" | tee /etc/apt/sources.list.d/jfrog.list
+
+4) Update the packages
+	apt-get update
+5) Install JFrog Artifactory
+	apt-get install jfrog-artifactory-oss
+
+6) Start & Enable the JFrog Service
+	systemctl start artifactory
+	systemctl enable artifactory
+
+7) Check the JFrog Service status
+	systemctl status artifactory
+
+8) Access jfrog Artifactory web-inteface
+	http://server-ip:8082/ui/login/
+
+Note: - By default login id - admin
+		    password - password
