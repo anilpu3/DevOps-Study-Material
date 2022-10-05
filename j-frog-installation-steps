@@ -27,3 +27,114 @@ Operatin System Linux Ubuntu
 
 Note: - By default login id - admin
 		    password - password
+
+============================================================================================
+stage ('Server') {
+steps {
+rtServer (
+id: "Namma-Gfrog", //given in the jenkins system config in under Jfrog in Id field
+url: 'http://localhost:8082/artifactory',
+username: 'admin',
+password: 'Iquadtech123',
+bypassProxy: true,
+timeout: 300
+)
+}
+}
+
+stage('Upload') {
+steps{
+rtUpload (
+serverId: "Namma-Gfrog",
+spec: '''{
+"files": [
+{
+"pattern: "*.war"
+"target": "namma-repo-libs-snapshot-local" //repo created in Jfrog
+}
+]
+}''',
+)
+}
+}
+stage ('Publish Build Info') {
+steps {
+rtPublishBuildInfo (
+serverId: "Namma-Gfrog"
+)
+}
+}
+
+============================================================================
+stage('Build image') { // build and tag docker image
+        steps {
+            echo 'Starting to build docker image'
+
+            script {
+                def dockerfile = 'Dockerfile'
+                def customImage = docker.build('10.20.111.23:8081/docker-virtual/hello-world:latest', "-f ${dockerfile} .")
+
+            }
+        }
+    }
+
+    stage ('Push image to Artifactory') { // take that image and push to artifactory
+        steps {
+            rtDockerPush(
+                serverId: "jFrog-ar1",
+                image: "10.20.111.23:8081/docker-virtual/hello-world:latest",
+                host: 'tcp://localhost:2375',
+                targetRepo: 'local-repo', // where to copy to (from docker-virtual)
+                // Attach custom properties to the published artifacts:
+                properties: 'project-name=docker1;status=stable'
+            )
+        }
+    }
+
+ARTIFACTORY_DOCKER_REGISTRY should be IP/Artifactory-Repo-Key/Image:Tag
+HOST should be docker daemon (Docker for windows is localhost:2375)
+=============================================================================
+
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3.6.3' 
+    }
+    environment {
+        DATE = new Date().format('yy.M')
+        TAG = "${DATE}.${BUILD_NUMBER}"
+    }
+    stages {
+        stage ('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                script {
+                    docker.build("default-docker-local/hello-world:${TAG}")
+                }
+            }
+        }
+	    stage('Pushing Docker Image to Jfrog Artifactory') {
+            steps {
+                script {
+                    docker.withRegistry('https://vigneshsweekaran.jfrog.io', 'artifactory-credential') {
+                        docker.image("default-docker-local/hello-world:${TAG}").push()
+                        docker.image("default-docker-local/hello-world:${TAG}").push("latest")
+                    }
+                }
+            }
+        }
+        stage('Deploy'){
+            steps {
+                sh "docker stop hello-world | true"
+                sh "docker rm hello-world | true"
+                sh "docker run --name hello-world -d -p 9004:8080 vigneshsweekaran.jfrog.io/default-docker-local/hello-world:${TAG}"
+            }
+        }
+    }
+}
+
+
