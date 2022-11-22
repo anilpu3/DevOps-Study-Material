@@ -20,7 +20,7 @@
 4)finaly connect two instances
   i)switch to root user
   ii)enter the command 'apt-get update'
-  iii)enter the command 'apt-get install nfs-common'
+  iii)enter the command 'apt-get install nfs-common -y'
   iv)create a directory 'mkdir /efs'
   v)do above 4 steps in two instances 
   vi)go to efs tab, in right top click on attach and select mount via DNS option and copy the second option in 'Using the NFS client'
