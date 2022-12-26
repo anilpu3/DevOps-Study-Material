@@ -1,0 +1,181 @@
+Minikube Setup
+
+sudo apt-get update
+
+Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+ls
+chmod +x kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+kubectl version
+
+Install docker and containerd package
+sudo apt-get update
+
+sudo apt-get install \
+ca-certificates \
+curl \
+gnupg \
+lsb-release -y
+
+Add Docker’s official GPG key:
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+Use the following command to set up the repository:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+Install Docker Engine
+
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
+
+sudo groupadd docker
+sudo usermod -aG docker $USER
+
+sudo systemctl enable docker
+systemctl status docker
+
+
+Install cri-dockerd on ubuntu 22.04 LTS
+LINK - https://github.com/Mirantis/cri-dockerd#build-and-install 
+
+git clone https://github.com/Mirantis/cri-dockerd.git
+wget https://storage.googleapis.com/golang/getgo/installer_linux
+chmod +x ./installer_linux
+./installer_linux
+source ~/.bash_profile
+
+cd cri-dockerd
+mkdir bin
+go build -o bin/cri-dockerd
+sudo mkdir -p /usr/local/bin
+sudo install -o root -g root -m 0755 bin/cri-dockerd /usr/local/bin/cri-dockerd
+sudo cp -a packaging/systemd/* /etc/systemd/system
+sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+sudo systemctl daemon-reload
+sudo systemctl enable cri-docker.service
+sudo systemctl enable --now cri-docker.socket
+
+Download Minikube setup
+
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+(optional - sudo install minikube-linux-amd64 /usr/local/bin/minikube) - install or copy the folder to bin directory
+chmod +x minikube-linux-amd64
+sudo mv minikube-linux-amd64 /usr/local/bin/
+minikube-linux-amd64 version
+output:
+minikube-linux-amd64 version: v1.28.0
+commit: 986b1ebd987211ed16f8cc10aed7d2c42fc8392f
+Note - you can get inside /usr/local/bin and change the name of minikube-linux-amd64 to minikube and run minikube version
+
+minikube start --vm-driver=none
+
+Error - 
+minikube v1.28.0 on Ubuntu 22.04 (xen/amd64)
+* Using the none driver based on user configuration
+X Exiting due to GUEST_MISSING_CONNTRACK: Sorry, Kubernetes 1.25.3 requires conntrack to be installed in root's path
+
+Solution - 
+sudo apt-get install -y conntrack
+
+Re-run
+minikube start --vm-driver=none
+
+* minikube v1.28.0 on Ubuntu 22.04 (xen/amd64)
+* Using the none driver based on user configuration
+* Starting control plane node minikube in cluster minikube
+* Running on localhost (CPUs=2, Memory=3920MB, Disk=19662MB) ...
+* OS release is Ubuntu 22.04.1 LTS
+
+X Exiting due to RUNTIME_ENABLE: Temporary Error: sudo crictl version: exit status 1
+stdout:
+
+stderr:
+sudo: crictl: command not found
+
+* 
+╭─────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                             │
+│    * If the above advice does not help, please let us know:                                 │
+│      https://github.com/kubernetes/minikube/issues/new/choose                               │
+│                                                                                             │
+│    * Please run `minikube logs --file=logs.txt` and attach logs.txt to the GitHub issue.    │
+│                                                                                             │
+╰──────────────────────────────────────────��──────────────────────────────────────────────────╯
+
+solution for above Error -
+https://github.com/kubernetes-sigs/cri-tools#install-crictl
+
+Install crictl
+VERSION="v1.25.0"
+wget https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-$VERSION-linux-amd64.tar.gz
+sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
+rm -f crictl-$VERSION-linux-amd64.tar.gz
+
+chmod 666 /var/run/docker.sock
+minikube start --vm-driver=none
+
+Output - 
+* minikube v1.28.0 on Ubuntu 22.04 (xen/amd64)
+* Using the none driver based on existing profile
+* Starting control plane node minikube in cluster minikube
+* Restarting existing none bare metal machine for "minikube" ...
+* OS release is Ubuntu 22.04.1 LTS
+* Preparing Kubernetes v1.25.3 on Docker 20.10.22 ...
+  - kubelet.resolv-conf=/run/systemd/resolve/resolv.conf
+    > kubelet.sha256:  64 B / 64 B [-------------------------] 100.00% ? p/s 0s
+    > kubectl.sha256:  64 B / 64 B [-------------------------] 100.00% ? p/s 0s
+    > kubeadm.sha256:  64 B / 64 B [-------------------------] 100.00% ? p/s 0s
+    > kubeadm:  41.77 MiB / 41.77 MiB [------------] 100.00% 22.50 MiB p/s 2.1s
+    > kubectl:  42.93 MiB / 42.93 MiB [------------] 100.00% 22.17 MiB p/s 2.1s
+    > kubelet:  108.95 MiB / 108.95 MiB [----------] 100.00% 35.21 MiB p/s 3.3s
+  - Generating certificates and keys ...
+  - Booting up control plane ...
+  - Configuring RBAC rules ...
+* Configuring local host environment ...
+* 
+! The 'none' driver is designed for experts who need to integrate with an existing VM
+* Most users should use the newer 'docker' driver instead, which does not require root!
+* For more information, see: https://minikube.sigs.k8s.io/docs/reference/drivers/none/
+* 
+! kubectl and minikube configuration will be stored in /home/ubuntu
+! To use kubectl or minikube commands as your own user, you may need to relocate them. For example, to overwrite your own settings, run:
+* 
+  - sudo mv /home/ubuntu/.kube /home/ubuntu/.minikube $HOME
+  - sudo chown -R $USER $HOME/.kube $HOME/.minikube
+* 
+* This can also be done automatically by setting the env var CHANGE_MINIKUBE_NONE_USER=true
+* Verifying Kubernetes components...
+  - Using image gcr.io/k8s-minikube/storage-provisioner:v5
+* Enabled addons: default-storageclass, storage-provisioner
+* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+
+
+minikube status
+Output - 
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+Install calico 
+curl https://docs.projectcalico.org/manifests/calico-typha.yaml -o calico.yaml
+kubectl apply -f calico.yaml
+
+kubectl get nodes
+kubectl get events (view cluster events)
+kubectl config view (view the kubectl configuration)
+kubectl run namma-nginx --image=nginx --port=8089
+kubectl get pods
+
+kubectl create deployment namma-nginx --image=nginx
+kubectl get deployments or deploy
+
+kubectl expose deployment namma-nginx --type=NodePort --port=8080
+kubectl get svc
