@@ -1,0 +1,13 @@
+git branch -a | grep -v HEAD | cut -d '/' -f3 | grep -v master
+switch to master or main branch and run the above command, it will list out all the branches in the repository
+
+git branch -a | grep -v HEAD | cut -d '/' -f3 | grep -v master > /tmp/branches
+redirect and store it in tmp folder with file name branches.
+
+for i in `cat /tmp/branches`; do echo $i; done
+you can use this command to print branches out on console.
+
+for i in `cat /tmp/branches`; do git checkout $i; done
+if you have many branches, you can checkout all the branches at a time with a single command
+
+git branch -a
