@@ -16,7 +16,7 @@ cat .git/config
         merge = refs/heads/master
         
 git remote rm origin (removes existin link from the configuration)
-git remote add <remote link>
+git remote add origin <remote link>
 eg: git remote add origin ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/namma-repo
 cat .git/config
 [core]
