@@ -27,3 +27,5 @@ cat .git/config
 [remote "origin"]
         url = ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/namma-repo                         #After         
         fetch = +refs/heads/*:refs/remotes/origin/*
+        
+git push origin --all        
