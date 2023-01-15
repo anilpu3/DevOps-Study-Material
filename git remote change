@@ -1,5 +1,20 @@
 cd <repo name> (get inside a git repo which s cloned to perform below git cmds)
 cat .git/config
+[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+[remote "origin"]
+        url = https://github.com/devopshydclub/vprofile-project.git                             #before
+        fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "vp-rem"]
+        remote = origin
+        merge = refs/heads/vp-rem
+[branch "master"]
+        remote = origin
+        merge = refs/heads/master
+        
 git remote rm origin (removes existin link from the configuration)
 git remote add <remote link>
 eg: git remote add origin ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/namma-repo
@@ -10,5 +25,5 @@ cat .git/config
         bare = false
         logallrefupdates = true
 [remote "origin"]
-        url = ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/namma-repo
+        url = ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/namma-repo                         #After         
         fetch = +refs/heads/*:refs/remotes/origin/*
